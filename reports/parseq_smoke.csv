@@ -1,0 +1,11 @@
+filename,ground_truth,prediction,match,confidence,latency_ms
+crop_00_36B00069_two_rows.jpg,36B00069,36B00069,True,0.9972,41.82
+crop_01_36A12097_one_row.jpg,36A12097,36A12097,True,0.9999,36.75
+crop_02_29H101276_motorcycle.jpg,29H101276,29H101276,True,0.9998,37.58
+crop_03_14U125130_motorcycle.jpg,14U125130,14U125130,True,0.9999,36.59
+crop_04_36C15752_two_rows.jpg,36C15752,36C15752,True,0.9998,36.85
+crop_05_36A00357_one_row.jpg,36A00357,36A00357,True,0.9999,36.92
+crop_06_36A14776_two_rows.jpg,36A14776,36A14776,True,0.9997,36.49
+crop_07_36C20142_one_row.jpg,36C20142,36C20142,True,0.9998,36.74
+crop_08_36A42965_one_row.jpg,36A42965,36A42965,True,0.9999,36.27
+crop_09_36N3761_two_rows.jpg,36N3761,36N3761,True,0.9998,36.81

@@ -1,0 +1,5 @@
+experiment_id,stage,architecture,pretrained,seed,status,best_epoch,val_exact,val_unseen,one_row,two_rows,motorcycle,char_acc,cer,checkpoint,decision,notes
+STUDENT_BASE,STUDENT,LPRNetLite,NO,42,COMPLETE,3,86.02,84.86,90.57,81.44,80.86,97.48,0.0252,weights/ocr/experiments/phase4/control_seed42/best.pth,BENCHMARK,Starting Phase 4 Best Student Baseline
+TEACHER_PARSEQ,TEACHER,PARSeq-Tiny,baudm/parseq,42,COMPLETE,8,95.2,94.23,99.16,95.0,82.11,99.26,0.0074,weights/ocr/teachers/parseq_tiny_vn/best.pth,QUALIFIED_STRONG,Pretrained PARSeq Tiny FT; Val delta: +9.18 pp
+kd_a_seed42,KD,LPRNetLite,Phase4_Control_S42,42,COMPLETE,0,86.02,84.86,90.57,81.44,80.86,97.48,0.0252,weights/ocr/experiments/kd/kd_a_seed42/best.pth,QUALIFIED,KD-A lambda=0.25; Val delta: +0.00 pp
+kd_a_pilot_light,KD,LPRNetLite,Phase4_Control_S42,42,COMPLETE,0,86.02,84.86,90.57,81.44,80.86,97.48,0.0252,weights/ocr/experiments/kd/kd_a_pilot_light/best.pth,QUALIFIED,KD-A lambda=0.1; Val delta: +0.00 pp

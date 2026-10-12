@@ -1,0 +1,11 @@
+source_folder,num_images,annotation_available,bbox_available,plate_text_available,layout_available,previously_used,eligible
+datasets/VNLP_detection/detection/one_row,19086,YES,YES,YES,YES,YES (train: 15268 | val: 1909 | test: 1909),CONDITIONAL (0 if excluding train/val/test; 1909 if using test_clean)
+datasets/VNLP_detection/detection/two_rows,12618,YES,YES,YES,YES,YES (train: 10094 | val: 1262 | test: 1262),CONDITIONAL (0 if excluding train/val/test; 1262 if using test_clean)
+datasets/VNLP_detection/detection/two_rows_label_xe_may,5593,YES,YES,YES,YES,YES (train: 4474 | val: 557 | test: 562),CONDITIONAL (0 if excluding train/val/test; 557 if using test_clean)
+vietnamese license plate.v1i.yolov11/train,5845,YES (YOLO),YES,NO,NO,YES (Plate Detector Training),NO (No ground truth plate text)
+vietnamese license plate.v1i.yolov11/valid,1680,YES (YOLO),YES,NO,NO,YES (Plate Detector Validation),NO (No ground truth plate text)
+vietnamese license plate.v1i.yolov11/test,832,YES (YOLO),YES,NO,NO,YES (Plate Detector Test),NO (No ground truth plate text)
+datasets_external/pbl4,13320,YES,NO,YES,NO,YES (OCR Training Crops),NO (Cropped plates only - not full scene)
+dataset_staging/pbl4_unique,1211,YES,NO,YES,NO,YES (OCR Training Crops),NO (Cropped plates only - not full scene)
+dataset_staging/synthetic_phase5,2000,YES,YES,YES,YES,NO,NO (Synthetic data prohibited by protocol)
+datasets/e2e_eval_100,100,YES,YES,YES,YES,YES (Previous 100-sample benchmark),NO (Previously used)

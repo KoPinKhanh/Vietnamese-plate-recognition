@@ -1,0 +1,77 @@
+# ==============================================================================
+# Python & Byte-code
+# ==============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyd
+*.so
+
+# ==============================================================================
+# Virtual Environments
+# ==============================================================================
+.venv/
+venv/
+env/
+ENV/
+
+# ==============================================================================
+# Datasets & Heavy Archive Files (Tránh vượt quá quota và giới hạn 100MB GitHub)
+# ==============================================================================
+datasets/
+datasets_external/
+dataset_staging/
+vietnamese license plate.v1i.yolov11/
+*.zip
+*.tar
+*.tar.gz
+*.mp4
+*.avi
+*.mkv
+
+# ==============================================================================
+# Model Weights & Binaries
+# Mặc định bỏ qua các file nhị phân lớn và toàn bộ 30+ checkpoints thử nghiệm
+# ==============================================================================
+*.pt
+*.pth
+*.onnx
+*.engine
+*.tflite
+*.safetensors
+weights/ocr/experiments/
+weights/ocr/teachers/
+
+# Ngoại lệ: Cho phép các Champion Models cốt lõi & Manifest triển khai
+!weights/best_license_plate_yolo11n.pt
+!weights/ocr/best_lprnet_vn.onnx
+!weights/deployment/pi_cpu/yolo11n_640_fp32.onnx
+!weights/**/deployment_manifest.json
+
+# ==============================================================================
+# Experiment Outputs & Scratch (Log, output test, runs ultralytics)
+# ==============================================================================
+runs/
+outputs/
+scratch/
+
+# ==============================================================================
+# Secrets, Keys & Temp Files
+# ==============================================================================
+`n`n`n*
+*.key
+*.pem
+*.pub
+.env
+.env.*
+
+# ==============================================================================
+# IDE & System Files
+# ==============================================================================
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

@@ -1,0 +1,35 @@
+# Configuration for Vietnamese License Plate OCR (LPRNet-Lite) - Experiment V2-A (PBL4 Unique Added)
+# Designed for training on RTX 3050 Laptop and export to OpenCV DNN on Raspberry Pi 5
+
+data:
+  train_manifest: "datasets/VNLP_processed/train_v2a.csv"
+  val_manifest: "datasets/VNLP_processed/val.csv"
+  test_manifest: "datasets/VNLP_processed/test.csv"
+  test_clean_manifest: "datasets/VNLP_processed/test_clean.csv"
+  unseen_manifest: "datasets/VNLP_processed/test_unseen_text.csv"
+  input_width: 160
+  input_height: 48
+  num_workers: 4
+
+model:
+  name: "LPRNetLite"
+  num_classes: 37
+  blank_index: 36
+  dropout_rate: 0.3
+
+training:
+  batch_size: 64
+  epochs: 60
+  learning_rate: 0.001
+  weight_decay: 0.0001
+  scheduler: "cosine"  # cosine or plateau
+  min_lr: 0.00001
+  early_stopping_patience: 20
+  mixed_precision: true
+  seed: 42
+  grad_clip_norm: 5.0
+
+checkpoint:
+  save_dir: "weights/ocr/experiments/v2a"
+  best_name: "best_lprnet_v2a.pth"
+  last_name: "last_lprnet_v2a.pth"

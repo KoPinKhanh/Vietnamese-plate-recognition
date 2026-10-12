@@ -1,0 +1,12 @@
+# Dataset YAML cho Ultralytics YOLO
+# Project: Vietnamese License Plate Detection
+# Model: YOLO11n
+
+path: d:/Vietnam_Plate_Project/vietnamese license plate.v1i.yolov11
+train: train/images
+val: valid/images
+test: test/images
+
+nc: 1
+names:
+  0: license_plate

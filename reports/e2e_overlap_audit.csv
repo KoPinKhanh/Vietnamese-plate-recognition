@@ -1,0 +1,2 @@
+source_manifest,total_records,test_overlap_count,leakage_status
+D:\Vietnam_Plate_Project\datasets\VNLP_processed\val.csv,3728,0,PASSED_ZERO_LEAKAGE
