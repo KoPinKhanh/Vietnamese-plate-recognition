@@ -155,18 +155,18 @@ python scripts/predict_camera.py --weights weights/best_license_plate_yolo11n.pt
 
 ---
 
-## 📚 Hướng Dẫn Dành Cho Nhóm Làm Báo Cáo (Report Resource Map)
+## 📚 Danh Mục Báo Cáo Kỹ Thuật & Thực Nghiệm (Technical Reports)
 
-Các thành viên trong nhóm có thể tra cứu và trích xuất số liệu/hình ảnh để đưa vào Slide và Báo cáo đề tài theo bảng chỉ dẫn sau:
+Bảng tổng hợp các tài liệu kỹ thuật, số liệu thực nghiệm chuyên sâu và báo cáo đo lường chi tiết của dự án phục vụ công tác đánh giá và thẩm định:
 
-| Nội dung cần cho Báo cáo / Slide | Tệp tin tài liệu tham chiếu tương ứng |
+| Chuyên đề thực nghiệm / Kỹ thuật | Tài liệu báo cáo chi tiết tương ứng |
 | :--- | :--- |
-| **Ảnh minh họa thực tế cho Slide** | Thư mục `reports/vehicle_smoke/` (Chứa 10 ảnh xe máy & ô tô phát hiện biển số thành công trong các điều kiện thực tế). |
-| **Số liệu Benchmark phần cứng Raspberry Pi 5** | [Báo cáo benchmark](./reports/PI5_FP32_ONNX_INDIVIDUAL_BENCHMARK.md) (FPS, độ trễ, RAM, nhiệt độ CPU). |
-| **Số liệu định tuyến Hybrid R1 & Cứu nguy xe máy** | [Báo cáo Hybrid R1](./reports/FINAL_LOCKED_HYBRID_R1_ROUTING_REPORT.md). |
-| **Quá trình huấn luyện OCR & Thử nghiệm Phase 4** | [Báo cáo Phase 4](./reports/PHASE4_MASTER_REPORT_FOR_CHATGPT.md). |
-| **Kỹ thuật chưng cất tri thức (Knowledge Distillation)** | [Báo cáo KD](./reports/TEACHER_KD_MASTER_REPORT_FOR_CHATGPT.md). |
-| **Phân tích so sánh kích thước 416 vs 640** | [Báo cáo so sánh](./reports/PLATE_416_VS_640_CONTROLLED_REPORT.md). |
+| **Dữ liệu & Hình ảnh kiểm thử hiện trường** | Thư mục `reports/vehicle_smoke/` (Tập hợp ảnh kiểm thử thực tế xe máy, ô tô, xe tải). |
+| **Số liệu Benchmark phần cứng Raspberry Pi 5** | [Báo cáo benchmark Raspberry Pi 5](./reports/PI5_FP32_ONNX_INDIVIDUAL_BENCHMARK.md) (Chi tiết FPS, độ trễ từng stage, RAM). |
+| **Chiến lược định tuyến Hybrid R1 (Cứu nguy xe máy)** | [Báo cáo định tuyến Hybrid R1](./reports/FINAL_LOCKED_HYBRID_R1_ROUTING_REPORT.md). |
+| **Quá trình huấn luyện OCR & Thử nghiệm Phase 4** | [Báo cáo huấn luyện và tối ưu OCR](./reports/PHASE4_MASTER_REPORT_FOR_CHATGPT.md). |
+| **Kỹ thuật chưng cất tri thức (Knowledge Distillation)** | [Báo cáo Teacher & Chưng cất tri thức](./reports/TEACHER_KD_MASTER_REPORT_FOR_CHATGPT.md). |
+| **Phân tích so sánh độ phân giải 416 vs 640** | [Báo cáo thực nghiệm 416 vs 640](./reports/PLATE_416_VS_640_CONTROLLED_REPORT.md). |
 
 ---
 
