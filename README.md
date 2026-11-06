@@ -6,7 +6,7 @@ Hệ thống nhận diện biển số phương tiện giao thông Việt Nam to
 
 ## 📌 Điểm Nổi Bật Của Dự Án
 
-**Tài liệu:** [Kết quả](./reports/) · [Dữ liệu](./DATASETS.md)
+**Tài liệu & Dữ liệu:** [Báo cáo kết quả](./reports/) · [Liên kết các tập dữ liệu](./DATASETS.md)
 
 * **Phát hiện biển số chính xác cao (mAP50 99.49%)**: Huấn luyện trên mô hình **YOLO11n** tùy biến với tập dữ liệu biển số Việt Nam phong phú (ô tô, xe máy, biển vuông 2 dòng, biển dài 1 dòng).
 * **Mô hình OCR thuần Việt chuyên dụng (LPRNet & Teacher PARSeq)**: Xử lý triệt để bài toán nhận diện ký tự font chữ Việt Nam, phân chia tầng chữ thông minh, khử nhầm lẫn các cặp ký tự khó (`2-7`, `8-B`, `0-D`).
@@ -59,6 +59,18 @@ flowchart LR
 | **YOLO11n-640 (ONNX)** | `[1, 3, 640, 640]` | **191.98 ms** | **5.21 FPS** | **249.6 MB** |
 | **LPRNet OCR (ONNX)** | `[1, 3, 48, 160]` | **~16.40 ms** | **> 60 FPS** | **< 60 MB** |
 | **Trọn gói E2E (416 + OCR)** | Multi-stage | **~88.32 ms** | **~11.3 FPS** | **~210 MB** |
+
+### 4. Minh Họa Kết Quả Nhận Diện Thực Tế (Visual Results)
+
+Dưới đây là một số hình ảnh thực tế từ quá trình kiểm thử hệ thống phát hiện phương tiện, định vị biển số và nhận dạng ký tự (OCR) trên đa dạng loại biển số Việt Nam (ô tô, xe máy, biển 1 dòng, biển 2 dòng):
+
+| Ô tô biển dài 1 dòng (`36A-120.97`) | Xe máy biển vuông 2 dòng (`29H1-012.76`) |
+| :---: | :---: |
+| ![Ô tô 1 dòng](./reports/vehicle_smoke/annotated_scene_01_6_2162_1_36A12097_105_238_563_305.jpg) | ![Xe máy 2 dòng](./reports/vehicle_smoke/annotated_scene_02_7_2766_0_29h101276_520_101_620_200.jpg) |
+| **Xe tải biển dài (`36C-157.52`)** | **Xe máy biển vuông 2 dòng (`36N-3761`)** |
+| ![Xe tải](./reports/vehicle_smoke/annotated_scene_04_7_4276_0_36C15752_198_215_406_339.jpg) | ![Biển số xe máy](./reports/vehicle_smoke/annotated_scene_09_7_2075_0_36N3761_165_302_202_340.jpg) |
+
+*Toàn bộ ảnh kiểm thử hiện trường chi tiết được lưu trữ tại thư mục [`reports/vehicle_smoke/`](./reports/vehicle_smoke/).*
 
 ---
 
