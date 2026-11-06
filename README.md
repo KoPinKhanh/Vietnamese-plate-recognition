@@ -6,7 +6,7 @@ Hệ thống nhận diện biển số phương tiện giao thông Việt Nam to
 
 ## 📌 Điểm Nổi Bật Của Dự Án
 
-> **Tài liệu nộp bài:** [Mã nguồn](./scripts/) · [Bảng kết quả CSV](./reports/) · [Ảnh kết quả](./reports/vehicle_smoke/) · [Nguồn và hướng dẫn tải dữ liệu](./DATASETS.md). Slide được nộp riêng, không lưu trong repository này.
+**Tài liệu:** [Kết quả](./reports/) · [Dữ liệu](./DATASETS.md)
 
 * **Phát hiện biển số chính xác cao (mAP50 99.49%)**: Huấn luyện trên mô hình **YOLO11n** tùy biến với tập dữ liệu biển số Việt Nam phong phú (ô tô, xe máy, biển vuông 2 dòng, biển dài 1 dòng).
 * **Mô hình OCR thuần Việt chuyên dụng (LPRNet & Teacher PARSeq)**: Xử lý triệt để bài toán nhận diện ký tự font chữ Việt Nam, phân chia tầng chữ thông minh, khử nhầm lẫn các cặp ký tự khó (`2-7`, `8-B`, `0-D`).
@@ -160,5 +160,5 @@ Các thành viên trong nhóm có thể tra cứu và trích xuất số liệu/
 
 ## 👥 Thành Viên Nhóm & Đóng Góp
 
-* **Tác giả / Nhóm phát triển**: Nhóm nghiên cứu nhận dạng biển số thông minh.
+* **Nhóm phát triển**: Nhóm 7.
 * **Mã nguồn GitHub**: [https://github.com/KoPinKhanh/Vietnamese-plate-recognition](https://github.com/KoPinKhanh/Vietnamese-plate-recognition)
