@@ -6,6 +6,8 @@ Hệ thống nhận diện biển số phương tiện giao thông Việt Nam to
 
 ## 📌 Điểm Nổi Bật Của Dự Án
 
+> **Tài liệu nộp bài:** [Mã nguồn](./scripts/) · [Bảng kết quả CSV](./reports/) · [Ảnh kết quả](./reports/vehicle_smoke/) · [Nguồn và hướng dẫn tải dữ liệu](./DATASETS.md). Slide được nộp riêng, không lưu trong repository này.
+
 * **Phát hiện biển số chính xác cao (mAP50 99.49%)**: Huấn luyện trên mô hình **YOLO11n** tùy biến với tập dữ liệu biển số Việt Nam phong phú (ô tô, xe máy, biển vuông 2 dòng, biển dài 1 dòng).
 * **Mô hình OCR thuần Việt chuyên dụng (LPRNet & Teacher PARSeq)**: Xử lý triệt để bài toán nhận diện ký tự font chữ Việt Nam, phân chia tầng chữ thông minh, khử nhầm lẫn các cặp ký tự khó (`2-7`, `8-B`, `0-D`).
 * **Chiến lược định tuyến thông minh (Locked Hybrid R1 Routing)**: Kết hợp nhận diện trực tiếp và phân tầng phương tiện-biển số, tăng khả năng cứu nguy biển số xe máy khó trong điều kiện thực tế.
@@ -78,13 +80,12 @@ Vietnam_Plate_Project/
 │       └── deployment_manifest.json            # Manifest mô tả tham số triển khai
 │
 ├── detector/                                   # Module phát hiện biển số và phương tiện
-│   ├── license_plate_detector.py               # Lớp Detector chính
-│   └── pi_yolo_detector.py                     # Detector tối ưu hóa OpenCV DNN cho Pi
+│   └── pi_yolo_detector.py                     # Detector OpenCV DNN cho Pi
 │
 ├── ocr/                                        # Module nhận dạng ký tự & xử lý ngôn ngữ
 │   ├── plate_text_utils.py                     # Chuẩn hóa regex text [A-Z0-9], CER, formatting
 │   ├── preprocess.py                           # Tiền xử lý Otsu, CLAHE, aspect-ratio padding
-│   ├── lprnet.py                               # Kiến trúc mạng LPRNet PyTorch
+│   ├── models/lprnet_lite.py                    # Kiến trúc mạng LPRNet PyTorch
 │   └── pi_lprnet_ocr.py                        # Bộ giải mã LPRNet CTC cho Raspberry Pi
 │
 ├── scripts/                                    # Kịch bản thực thi & kiểm thử
@@ -132,10 +133,10 @@ python scripts/predict_image.py --source samples/car_sample_01.jpg --weights wei
 
 #### B. Nhận diện ký tự OCR bằng mô hình siêu nhẹ LPRNet ONNX
 ```bash
-python scripts/test_ocr_onnx_opencv.py --model weights/ocr/best_lprnet_vn.onnx --image samples/car_sample_01.jpg
+python scripts/test_ocr_onnx_opencv.py --model weights/ocr/best_lprnet_vn.onnx --image path/to/plate_crop.jpg
 ```
 
-#### C. Chạy toàn bộ Pipeline trên webcam máy tính
+#### C. Phát hiện biển số trên webcam máy tính (chưa gồm OCR)
 ```bash
 python scripts/predict_camera.py --weights weights/best_license_plate_yolo11n.pt
 ```
@@ -149,11 +150,11 @@ Các thành viên trong nhóm có thể tra cứu và trích xuất số liệu/
 | Nội dung cần cho Báo cáo / Slide | Tệp tin tài liệu tham chiếu tương ứng |
 | :--- | :--- |
 | **Ảnh minh họa thực tế cho Slide** | Thư mục `reports/vehicle_smoke/` (Chứa 10 ảnh xe máy & ô tô phát hiện biển số thành công trong các điều kiện thực tế). |
-| **Số liệu Benchmark phần cứng Raspberry Pi 5** | Xem chi tiết tại [reports/PI5_FP32_ONNX_INDIVIDUAL_BENCHMARK.md](file:///d:/Vietnam_Plate_Project/reports/PI5_FP32_ONNX_INDIVIDUAL_BENCHMARK.md) (Đầy đủ bảng đo FPS, độ trễ ms, RAM tiêu thụ, nhiệt độ CPU). |
-| **Số liệu định tuyến Hybrid R1 & Cứu nguy xe máy** | Xem tại [reports/FINAL_LOCKED_HYBRID_R1_ROUTING_REPORT.md](file:///d:/Vietnam_Plate_Project/reports/FINAL_LOCKED_HYBRID_R1_ROUTING_REPORT.md) (Chi tiết 11 ca cứu nguy biển số xe máy khó). |
-| **Quá trình huấn luyện OCR & Thử nghiệm Phase 4** | Xem tại [reports/PHASE4_MASTER_REPORT_FOR_CHATGPT.md](file:///d:/Vietnam_Plate_Project/reports/PHASE4_MASTER_REPORT_FOR_CHATGPT.md) (Số liệu phân tích lỗi CER, phân phối ký tự). |
-| **Kỹ thuật chưng cất tri thức (Knowledge Distillation)**| Xem tại [reports/TEACHER_KD_MASTER_REPORT_FOR_CHATGPT.md](file:///d:/Vietnam_Plate_Project/reports/TEACHER_KD_MASTER_REPORT_FOR_CHATGPT.md) (Dùng Teacher PARSeq huấn luyện Student LPRNet). |
-| **Phân tích so sánh kích thước 416 vs 640** | Xem tại [reports/PLATE_416_VS_640_CONTROLLED_REPORT.md](file:///d:/Vietnam_Plate_Project/reports/PLATE_416_VS_640_CONTROLLED_REPORT.md). |
+| **Số liệu Benchmark phần cứng Raspberry Pi 5** | [Báo cáo benchmark](./reports/PI5_FP32_ONNX_INDIVIDUAL_BENCHMARK.md) (FPS, độ trễ, RAM, nhiệt độ CPU). |
+| **Số liệu định tuyến Hybrid R1 & Cứu nguy xe máy** | [Báo cáo Hybrid R1](./reports/FINAL_LOCKED_HYBRID_R1_ROUTING_REPORT.md). |
+| **Quá trình huấn luyện OCR & Thử nghiệm Phase 4** | [Báo cáo Phase 4](./reports/PHASE4_MASTER_REPORT_FOR_CHATGPT.md). |
+| **Kỹ thuật chưng cất tri thức (Knowledge Distillation)** | [Báo cáo KD](./reports/TEACHER_KD_MASTER_REPORT_FOR_CHATGPT.md). |
+| **Phân tích so sánh kích thước 416 vs 640** | [Báo cáo so sánh](./reports/PLATE_416_VS_640_CONTROLLED_REPORT.md). |
 
 ---
 
