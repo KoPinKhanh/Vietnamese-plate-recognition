@@ -1,14 +1,29 @@
-# Nguồn dữ liệu và cách tái lập
+# Dataset Lineage & Reproducibility Guide
 
-Các bộ ảnh huấn luyện không được lưu trực tiếp trên GitHub vì dung lượng lớn (tuân thủ giới hạn file và tối ưu repo). Ba ảnh trong [`samples/`](./samples/) được cung cấp sẵn để chạy thử nhanh (Plug & Play).
+Due to storage limitations and Git repository best practices, full-scale training image archives are not tracked directly in this repository. Three self-contained sample images are bundled in [`samples/`](./samples/) for immediate out-of-the-box testing (Plug & Play).
 
-| Nguồn tập dữ liệu | Liên kết truy cập | Vai trò & Quy mô |
+---
+
+## 🌐 Dataset Inventory & Public Sources
+
+| Dataset Source | Access Link | Scope & Role |
 | :--- | :--- | :--- |
-| **Roboflow VN License Plate** | [Roboflow Universe (8,357 ảnh)](https://universe.roboflow.com/school-fuhih/vietnamese-license-plate-tptd0) | Dữ liệu huấn luyện mô hình YOLO11 phát hiện vị trí biển số (Train: 5,845; Val: 1,680; Test: 832 ảnh có nhãn). |
-| **VNLP (Vietnamese License Plate)** | [Google Drive do tác giả VNLP công bố](https://drive.google.com/drive/folders/19OnlE0gFXEMPyngxRZ980d4z0fGQ-C7T?usp=sharing) | Nguồn ảnh OCR chính (37,297 mẫu đa dạng: 19,086 biển dài 1 dòng, 12,618 biển vuông ô tô 2 dòng, 5,593 biển xe máy). Liên kết trích từ `datasets/VNLP-main/VNLP-main/readme.md`. |
-| **PBL4 Deep Learning** | [Repository nguồn GitHub](https://github.com/lephamcong/PBL4_Deep-Learning) | Dữ liệu OCR bổ sung; xem chi tiết tại [báo cáo nguồn và kiểm thử trùng lặp](./reports/pbl4_dataset_report.md). |
-| **Vietnamese License Plate Generator** | [Repository nguồn GitHub](https://github.com/NNDam/Vietnamese-License-Plate-Generator) | Sinh ảnh tổng hợp thử nghiệm; xem chi tiết tại [báo cáo mở rộng dữ liệu](./reports/dataset_expansion_summary.md). |
+| **Roboflow VN License Plate** | [Roboflow Universe (8,357 images)](https://universe.roboflow.com/school-fuhih/vietnamese-license-plate-tptd0) | Bounding box plate detection training data for YOLO11 (Train: 5,845; Val: 1,680; Test: 832 labeled images). |
+| **VNLP (Vietnamese License Plate)** | [Google Drive (Published by VNLP Authors)](https://drive.google.com/drive/folders/19OnlE0gFXEMPyngxRZ980d4z0fGQ-C7T?usp=sharing) | Primary OCR training and evaluation benchmark (37,297 samples: 19,086 1-row rectangular plates, 12,618 2-row square car plates, 5,593 motorcycle plates). Source reference: `datasets/VNLP-main/VNLP-main/readme.md`. |
+| **PBL4 Deep Learning** | [Source GitHub Repository](https://github.com/lephamcong/PBL4_Deep-Learning) | Supplementary OCR domain data; see [Source Analysis & Deduplication Report](./reports/pbl4_dataset_report.md). |
+| **Vietnamese License Plate Generator** | [Source GitHub Repository](https://github.com/NNDam/Vietnamese-License-Plate-Generator) | Synthetic plate generation tool for hard-negative augmentation; see [Dataset Expansion Summary](./reports/dataset_expansion_summary.md). |
 
-Thư mục `datasets/`, `datasets_external/`, `dataset_staging/` và `vietnamese license plate.v1i.yolov11/` được cấu hình trong `.gitignore`. Sau khi tải tập VNLP, chuẩn bị manifest bằng lệnh [`tools/prepare_vnlp.py`](./tools/prepare_vnlp.py). Các cấu hình [`configs/license_plate.yaml`](./configs/license_plate.yaml), [`configs/ocr_lprnet.yaml`](./configs/ocr_lprnet.yaml) và [`configs/ocr_lprnet_v2a.yaml`](./configs/ocr_lprnet_v2a.yaml) chỉ ra các đường dẫn train/val/test tương ứng.
+---
 
-Các kết quả công bố, phân tích phân phối và giới hạn của tập dữ liệu được trình bày đầy đủ trong [`reports/current_dataset_report.md`](./reports/current_dataset_report.md) và [`reports/dataset_expansion_summary.md`](./reports/dataset_expansion_summary.md).
+## 🛠️ Data Preparation & Manifest Generation
+
+Directories `datasets/`, `datasets_external/`, `dataset_staging/`, and `vietnamese license plate.v1i.yolov11/` are excluded via `.gitignore`. 
+
+To prepare the dataset pipeline after downloading the raw archives:
+1. Generate standardized training manifests using [`tools/prepare_vnlp.py`](./tools/prepare_vnlp.py).
+2. Training, validation, and test splits are defined in configuration files:
+   - Detection: [`configs/license_plate.yaml`](./configs/license_plate.yaml)
+   - OCR Student: [`configs/ocr_lprnet.yaml`](./configs/ocr_lprnet.yaml)
+   - OCR Fine-tuning: [`configs/ocr_lprnet_v2a.yaml`](./configs/ocr_lprnet_v2a.yaml)
+
+For comprehensive statistical audits, character distributions, and boundary analyses, refer to [`reports/current_dataset_report.md`](./reports/current_dataset_report.md) and [`reports/dataset_expansion_summary.md`](./reports/dataset_expansion_summary.md).

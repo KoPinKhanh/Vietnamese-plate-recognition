@@ -1,176 +1,199 @@
-# 🚗 Vietnamese License Plate Recognition Pipeline — End-to-End AI System
+# 🚗 Vietnamese License Plate Recognition Pipeline — End-to-End Edge AI System
 
-Hệ thống nhận diện biển số phương tiện giao thông Việt Nam toàn diện (End-to-End ALPR), kết hợp các mô hình học sâu hiện đại nhất (**YOLO11**, **LPRNet**, **PARSeq**) với khả năng tối ưu hóa triển khai trên phần cứng biên (**Raspberry Pi 5 CPU** & **Laptop GPU**).
+<p align="center">
+  <img src="https://img.shields.io/badge/Python-3.10%2B-blue.svg" alt="Python 3.10+"/>
+  <img src="https://img.shields.io/badge/YOLO11-Ultralytics-00FFFF.svg" alt="YOLO11"/>
+  <img src="https://img.shields.io/badge/OCR-LPRNet%20%7C%20PARSeq-orange.svg" alt="OCR"/>
+  <img src="https://img.shields.io/badge/Inference-OpenCV%20DNN%20%7C%20ONNX-green.svg" alt="OpenCV DNN / ONNX"/>
+  <img src="https://img.shields.io/badge/Target-Raspberry%20Pi%205%20%7C%20Laptop%20GPU-red.svg" alt="Hardware"/>
+  <img src="https://img.shields.io/badge/Accuracy-mAP50%2099.49%25-brightgreen.svg" alt="mAP50 99.49%"/>
+</p>
 
----
-
-## 📌 Điểm Nổi Bật Của Dự Án
-
-**Tài liệu & Dữ liệu:** [Báo cáo kết quả](./reports/) · [Liên kết các tập dữ liệu](./DATASETS.md)
-
-* **Phát hiện biển số chính xác cao (mAP50 99.49%)**: Huấn luyện trên mô hình **YOLO11n** tùy biến với tập dữ liệu biển số Việt Nam phong phú (ô tô, xe máy, biển vuông 2 dòng, biển dài 1 dòng).
-* **Mô hình OCR thuần Việt chuyên dụng (LPRNet & Teacher PARSeq)**: Xử lý triệt để bài toán nhận diện ký tự font chữ Việt Nam, phân chia tầng chữ thông minh, khử nhầm lẫn các cặp ký tự khó (`2-7`, `8-B`, `0-D`).
-* **Chiến lược định tuyến thông minh (Locked Hybrid R1 Routing)**: Kết hợp nhận diện trực tiếp và phân tầng phương tiện-biển số, tăng khả năng cứu nguy biển số xe máy khó trong điều kiện thực tế.
-* **Tối ưu hóa phần cứng biên (Edge AI)**: Đã benchmark và kiểm chứng trên **Raspberry Pi 5** qua **ONNX Runtime FP32 / OpenCV DNN**, đạt tốc độ thời gian thực (**~14 FPS** cho mô hình 416x416).
-* **Báo cáo thí nghiệm chuyên sâu**: Lưu trữ đầy đủ dữ liệu đo lường khoa học, ma trận nhầm lẫn, báo cáo lineage phục vụ báo cáo khoa học và đồ án kỹ thuật.
+An end-to-end Automatic License Plate Recognition (**ALPR**) system tailored specifically for Vietnamese vehicle plates. The pipeline integrates state-of-the-art deep learning architectures (**YOLO11**, **LPRNet**, and **PARSeq**) with embedded deployment optimizations for **Raspberry Pi 5 CPU** (zero heavy dependencies) and **Laptop GPU**.
 
 ---
 
-## 🏗️ Kiến Trúc Hệ Thống (System Pipeline)
+## 📌 Key Highlights
+
+**Documentation & Data:** [Experiment Reports](./reports/) · [Dataset Sources & Lineage](./DATASETS.md)
+
+* **Ultra-High Precision Plate Detection (`mAP@50: 99.49%`)**: Fine-tuned on a custom **YOLO11n** architecture across a diverse dataset of 8,357 Vietnamese vehicles (cars, motorcycles, trucks, square 2-line, and rectangular 1-line plates).
+* **Specialized Vietnamese OCR Engine (LPRNet & Teacher PARSeq)**: Solves Vietnamese license plate character patterns, featuring automated gradient-based line separation and robust disambiguation of challenging character pairs (`2-7`, `8-B`, `0-D`).
+* **Smart Hybrid Routing (Locked Hybrid R1)**: Combines direct plate detection with vehicle-plate hierarchical cascade fallback to recover occluded and distant motorcycle plates.
+* **Edge AI Optimization (Raspberry Pi 5 Verified)**: Zero runtime dependencies on PyTorch or Ultralytics on the edge; runs pure **OpenCV DNN + NumPy CTC** achieving real-time performance (**~14 FPS** at 416×416 input resolution).
+* **Multi-Frame Temporal Stabilization**: Eliminates single-frame OCR flickering and duplicate alerts in video/camera streams via IoU track association and sliding-window majority voting.
+
+---
+
+## 🏗️ System Architecture Pipeline
 
 ```mermaid
 flowchart LR
-    A[📷 Input Image / Video / Camera] --> B[🚗 Vehicle & Plate Detection\nYOLO11n / YOLO11s]
+    A[📷 Input: Image / Video / Camera Stream] --> B[🚗 Vehicle & Plate Detector\nYOLO11n / YOLO11s ONNX]
     B --> C{Hybrid R1 Routing}
     C -->|Direct Detection| D[📐 Plate Rectifier & Crop\nAspect-Ratio Padding]
     C -->|Cascade Fallback| D
     D --> E[🔤 Vietnamese OCR Engine\nLPRNet-Lite ONNX / PARSeq]
-    E --> F[🧹 Post-Processing\nFormat Validation & CER Filter]
-    F --> G[✅ Output: 30A-123.45\nConfidence & Bounding Box]
+    E --> F[🧹 Post-Processing\nCTC Decode & Regex Validation]
+    F --> G[🔄 Temporal Stabilizer\nIoU Tracking & Majority Voting]
+    G --> H[✅ Output: 30A-123.45\nConfidence, BBox & Logs]
 ```
 
 ---
 
-## 📊 Bảng Kết Quả Thử Nghiệm & Benchmark
+## 📊 Experimental Results & Benchmarks
 
-### 1. Hiệu Năng Mô Hình Phát Hiện Biển Số (Plate Detector)
-* **Kiến trúc**: YOLO11n (Ultralytics)
-* **Số lượng tham số**: ~2.6M tham số (Siêu nhẹ)
+### 1. Plate Detector Performance (YOLO11n)
+* **Architecture**: YOLO11n (Ultralytics)
+* **Parameter Count**: ~2.59M parameters (ultra-lightweight)
 * **Precision**: **99.61%**
 * **Recall**: **99.18%**
 * **mAP@50**: **99.49%**
 * **mAP@50-95**: **70.42%**
-* **Trọng số xuất xưởng**: `weights/best_license_plate_yolo11n.pt` (5.46 MB)
+* **Model Checkpoint**: [`weights/best_license_plate_yolo11n.pt`](./weights/best_license_plate_yolo11n.pt) (5.46 MB)
 
-### 2. So Sánh Các Mô Hình Nhận Dạng Ký Tự (OCR Engines)
-| Mô hình OCR | Loại kiến trúc | Đặc điểm | Tốc độ | Độ chính xác (Exact Match) |
-| :--- | :--- | :--- | :--- | :--- |
-| **Tesseract OCR (Baseline)** | Classical Engine | Cần tiền xử lý Otsu/CLAHE | Chậm trên CPU | ~73% (Kém trên biển 2 dòng) |
-| **LPRNet VN (Student)** | Lightweight CNN + CTC | Tối ưu hóa cực nhẹ cho nhúng | **~15ms** | **> 91.5%** |
-| **PARSeq-Tiny VN (Teacher)** | Vision Transformer + Autoregressive | Mô hình tri thức chuẩn | ~45ms | **> 96.2%** |
-| **Hybrid Pipeline** | LPRNet + Fallback Routing | Cân bằng hoàn hảo tốc độ & độ chính xác | Real-time | **Tối ưu toàn diện** |
+### 2. Comparison of OCR Engines
+| OCR Model | Architecture Family | Characteristics | CPU Latency | Exact Match Accuracy |
+| :--- | :--- | :--- | :---: | :---: |
+| **Tesseract OCR (Baseline)** | Classical Engine | Requires Otsu/CLAHE preprocessing | Slow on CPU | ~73.0% (Struggles on 2-row plates) |
+| **LPRNet VN (Student)** | Lightweight CNN + CTC | Optimized for embedded CPU deployment | **~15 ms** | **> 91.5%** |
+| **PARSeq-Tiny VN (Teacher)** | Vision Transformer + Autoregressive | State-of-the-art reference accuracy | ~45 ms | **> 96.2%** |
+| **Hybrid Pipeline** | LPRNet + Fallback Routing | Balances real-time edge speed & high precision | Real-time | **Optimal Overall** |
 
-### 3. Hiệu Năng Thực Tế Trên Thiết Bị Biên (Raspberry Pi 5 CPU)
-*Hệ thống kiểm thử: Raspberry Pi 5 Model B Rev 1.0 (Cortex-A76 4 nhân @ 2.4 GHz, RAM 2GB, Debian 12, ONNX Runtime 1.30.0)*:
+### 3. Real-World Edge Benchmark on Raspberry Pi 5 CPU
+*Test Platform: Raspberry Pi 5 Model B Rev 1.0 (Quad-core Cortex-A76 @ 2.4 GHz, 2GB RAM, Debian 12, ONNX Runtime 1.30.0 / OpenCV DNN)*:
 
-| Mô hình kiểm thử | Kích thước Input | Thời gian xử lý (Mean Latency) | FPS đạt được | RAM chiếm dụng đỉnh |
+| Evaluated Model | Input Resolution | Mean Latency | Throughput (FPS) | Peak RAM Usage |
 | :--- | :---: | :---: | :---: | :---: |
 | **YOLO11n-416 (ONNX)** | `[1, 3, 416, 416]` | **71.92 ms** | **13.90 FPS** | **161.2 MB** |
 | **YOLO11n-640 (ONNX)** | `[1, 3, 640, 640]` | **191.98 ms** | **5.21 FPS** | **249.6 MB** |
 | **LPRNet OCR (ONNX)** | `[1, 3, 48, 160]` | **~16.40 ms** | **> 60 FPS** | **< 60 MB** |
-| **Trọn gói E2E (416 + OCR)** | Multi-stage | **~88.32 ms** | **~11.3 FPS** | **~210 MB** |
+| **End-to-End Pipeline (416 + OCR)** | Multi-stage | **~88.32 ms** | **~11.3 FPS** | **~210 MB** |
 
-### 4. Minh Họa Kết Quả Nhận Diện Thực Tế (Visual Results)
+### 4. Real-World Detection & Recognition Showcase (Visual Results)
 
-Dưới đây là một số hình ảnh thực tế từ quá trình kiểm thử hệ thống phát hiện phương tiện, định vị biển số và nhận dạng ký tự (OCR) trên đa dạng loại biển số Việt Nam (ô tô, xe máy, biển 1 dòng, biển 2 dòng):
+Representative qualitative results demonstrating accurate bounding box localization, two-row line rectification, and character recognition across cars, trucks, and motorcycles under diverse outdoor conditions:
 
-| Ô tô biển dài 1 dòng (`36A-120.97`) | Xe máy biển vuông 2 dòng (`29H1-012.76`) |
+| Car: 1-Row Rectangular Plate (`36A-120.97`) | Motorcycle: 2-Row Square Plate (`29H1-012.76`) |
 | :---: | :---: |
-| ![Ô tô 1 dòng](./reports/vehicle_smoke/annotated_scene_01_6_2162_1_36A12097_105_238_563_305.jpg) | ![Xe máy 2 dòng](./reports/vehicle_smoke/annotated_scene_02_7_2766_0_29h101276_520_101_620_200.jpg) |
-| **Xe tải biển dài (`36C-157.52`)** | **Xe máy biển vuông 2 dòng (`36N-3761`)** |
-| ![Xe tải](./reports/vehicle_smoke/annotated_scene_04_7_4276_0_36C15752_198_215_406_339.jpg) | ![Biển số xe máy](./reports/vehicle_smoke/annotated_scene_09_7_2075_0_36N3761_165_302_202_340.jpg) |
+| ![Car 1-Row](./reports/vehicle_smoke/annotated_scene_01_6_2162_1_36A12097_105_238_563_305.jpg) | ![Motorcycle 2-Row](./reports/vehicle_smoke/annotated_scene_02_7_2766_0_29h101276_520_101_620_200.jpg) |
+| **Commercial Truck Plate (`36C-157.52`)** | **Motorcycle Square Plate (`36N-3761`)** |
+| ![Truck Plate](./reports/vehicle_smoke/annotated_scene_04_7_4276_0_36C15752_198_215_406_339.jpg) | ![Motorcycle Plate](./reports/vehicle_smoke/annotated_scene_09_7_2075_0_36N3761_165_302_202_340.jpg) |
 
-*Toàn bộ ảnh kiểm thử hiện trường chi tiết được lưu trữ tại thư mục [`reports/vehicle_smoke/`](./reports/vehicle_smoke/).*
+*Full high-resolution qualitative test cases are archived in [`reports/vehicle_smoke/`](./reports/vehicle_smoke/).*
 
 ---
 
-## 📁 Cấu Trúc Thư Mục Dự Án
+## 📁 Repository Structure
 
 ```
 Vietnam_Plate_Project/
 │
-├── samples/                                    # Ảnh mẫu dùng chạy thử nghiệm nhanh (Plug & Play)
-│   ├── car_sample_01.jpg                       # Mẫu xe ô tô biển dài (1 dòng)
-│   ├── car_sample_02.jpg                       # Mẫu xe ô tô biển vuông (2 dòng)
-│   └── motorcycle_sample_01.jpg                # Mẫu xe máy biển số Việt Nam
+├── samples/                                    # Ready-to-use sample images (Plug & Play)
+│   ├── car_sample_01.jpg                       # Car 1-line rectangular plate
+│   ├── car_sample_02.jpg                       # Car 2-line square plate
+│   └── motorcycle_sample_01.jpg                # Vietnamese motorcycle plate
 │
-├── weights/                                    # Mô hình trọng số cốt lõi (Champion Models)
-│   ├── best_license_plate_yolo11n.pt           # Model YOLO11n Detector tốt nhất (5.46 MB)
-│   ├── ocr/best_lprnet_vn.onnx                 # Model LPRNet OCR ONNX (3.19 MB)
-│   └── deployment/pi_cpu/                      # Mô hình và manifest chuẩn hóa cho Pi 5
-│       ├── yolo11n_640_fp32.onnx               # Model detector ONNX tối ưu cho Pi (10.7 MB)
-│       └── deployment_manifest.json            # Manifest mô tả tham số triển khai
+├── weights/                                    # Trained Champion Model Weights
+│   ├── best_license_plate_yolo11n.pt           # YOLO11n Plate Detector PyTorch (5.46 MB)
+│   ├── ocr/best_lprnet_vn.onnx                 # LPRNet OCR ONNX Model (3.19 MB)
+│   └── deployment/pi_cpu/                      # Optimized deployment package for Raspberry Pi
+│       ├── yolo11n_640_fp32.onnx               # FP32 ONNX detector model
+│       └── deployment_manifest.json            # Deployment runtime metadata
 │
-├── detector/                                   # Module phát hiện biển số và phương tiện
-│   └── pi_yolo_detector.py                     # Detector OpenCV DNN cho Pi
+├── detector/                                   # Plate & vehicle detection module
+│   └── pi_yolo_detector.py                     # Standalone OpenCV DNN detector for CPU
 │
-├── ocr/                                        # Module nhận dạng ký tự & xử lý ngôn ngữ
-│   ├── plate_text_utils.py                     # Chuẩn hóa regex text [A-Z0-9], CER, formatting
-│   ├── preprocess.py                           # Tiền xử lý Otsu, CLAHE, aspect-ratio padding
-│   ├── models/lprnet_lite.py                    # Kiến trúc mạng LPRNet PyTorch
-│   └── pi_lprnet_ocr.py                        # Bộ giải mã LPRNet CTC cho Raspberry Pi
+├── ocr/                                        # Text recognition & stabilization module
+│   ├── charset.py                              # Alphanumeric vocabulary [0-9, A-Z] (37 classes)
+│   ├── ctc_decoder.py                          # CTC greedy collapse decoder (NumPy & PyTorch)
+│   ├── plate_text_utils.py                     # Plate normalization, CER & regex formatting
+│   ├── preprocess.py                           # Sobel gradient split & aspect letterbox padding
+│   ├── plate_stabilizer.py                     # Multi-frame IoU tracking & temporal voting
+│   ├── models/lprnet_lite.py                    # Lightweight PyTorch LPRNet-Lite CNN
+│   └── pi_lprnet_ocr.py                        # Standalone OpenCV DNN OCR engine for Pi
 │
-├── scripts/                                    # Kịch bản thực thi & kiểm thử
-│   ├── predict_image.py                        # Dự đoán biển số trên ảnh
-│   ├── predict_video.py                        # Dự đoán biển số trên video
-│   ├── predict_camera.py                       # Dự đoán biển số qua Webcam trực tiếp
-│   ├── test_ocr_onnx_opencv.py                 # Kiểm thử OCR ONNX thuần OpenCV DNN
-│   ├── pi_recognize_image.py                   # Pipeline trọn gói E2E trên Raspberry Pi
-│   └── benchmark_models_pi.py                  # Đo đạc benchmark chi tiết trên phần cứng Pi
+├── scripts/                                    # Execution, inference & evaluation scripts
+│   ├── predict_image.py                        # Detect plates on single images or folders
+│   ├── predict_video.py                        # Process video files
+│   ├── predict_camera.py                       # Live webcam inference
+│   ├── test_ocr_onnx_opencv.py                 # Pure OpenCV DNN OCR benchmark
+│   ├── pi_recognize_image.py                   # Full end-to-end pipeline on Raspberry Pi
+│   └── benchmark_models_pi.py                  # Hardware latency, memory & FPS benchmark
 │
-├── tools/                                      # Công cụ xuất mô hình & hỗ trợ triển khai
-│   ├── export_and_verify_ocr_onnx.py           # Xuất và kiểm chứng mô hình ONNX
-│   ├── remote_exec.py                          # Thực thi và đồng bộ tự động qua SSH sang Pi
-│   └── analyze_final_benchmark.py              # Phân tích số liệu kiểm thử
+├── tools/                                      # Export utilities & scientific verification
+│   ├── export_and_verify_ocr_onnx.py           # ONNX export and validation tool
+│   ├── remote_exec.py                          # SSH / SCP automation tool for Raspberry Pi
+│   └── analyze_final_benchmark.py              # Statistical metrics & latency analysis
 │
-├── reports/                                    # 📚 KHO BÁO CÁO THÍ NGHIỆM CHI TIẾT
-│   ├── vehicle_smoke/                          # Ảnh visualize kết quả nhận diện thực tế
-│   ├── FINAL_LOCKED_HYBRID_R1_ROUTING_REPORT.md# Báo cáo định tuyến Hybrid R1 hoàn chỉnh
-│   ├── PI5_FP32_ONNX_INDIVIDUAL_BENCHMARK.md   # Số liệu đo đạc chi tiết trên Raspberry Pi 5
-│   └── PHASE4_MASTER_REPORT_FOR_CHATGPT.md     # Báo cáo huấn luyện và tối ưu OCR Phase 4
+├── reports/                                    # 📚 Scientific Experiment Reports & Benchmarks
+│   ├── vehicle_smoke/                          # Qualitative detection visualization scenes
+│   ├── FINAL_LOCKED_HYBRID_R1_ROUTING_REPORT.md# Hybrid R1 routing evaluation report
+│   ├── PI5_FP32_ONNX_INDIVIDUAL_BENCHMARK.md   # Comprehensive Raspberry Pi 5 measurements
+│   └── PHASE4_MASTER_REPORT_FOR_CHATGPT.md     # Multi-seed OCR training & convergence logs
 │
-├── requirements.txt                            # Danh sách thư viện Python
-└── README.md                                   # Tài liệu hướng dẫn dự án
+├── requirements.txt                            # Python dependencies
+├── DATASETS.md                                 # Dataset links, splits, and lineage
+└── README.md                                   # Project documentation
 ```
 
 ---
 
-## ⚡ Hướng Dẫn Cài Đặt & Chạy Nhanh (Quickstart)
+## ⚡ Quickstart & Usage
 
-### 1. Cài đặt môi trường
-Yêu cầu Python 3.10 trở lên. Mở Terminal / PowerShell và chạy:
+### 1. Environment Installation
+Requires **Python 3.10+**. Clone the repository and install required packages:
 
 ```bash
-# 1. Cài đặt các thư viện cần thiết
+git clone https://github.com/KoPinKhanh/Vietnamese-plate-recognition.git
+cd Vietnamese-plate-recognition
 pip install -r requirements.txt
 ```
 
-### 2. Chạy thử nghiệm ngay với ảnh mẫu có sẵn (`samples/`)
+### 2. Plug & Play Inference with Sample Data (`samples/`)
 
-#### A. Nhận diện vị trí biển số bằng YOLO11n (Detector)
+#### A. Plate Detection using YOLO11n
 ```bash
 python scripts/predict_image.py --source samples/car_sample_01.jpg --weights weights/best_license_plate_yolo11n.pt
 ```
-*Kết quả ảnh đóng khung và độ tin cậy được lưu tại: `outputs/predictions/images/`*
+*Visualized detections with bounding boxes are saved to `outputs/predictions/images/`.*
 
-#### B. Nhận diện ký tự OCR bằng mô hình siêu nhẹ LPRNet ONNX
+#### B. Character OCR using Lightweight LPRNet ONNX
 ```bash
-python scripts/test_ocr_onnx_opencv.py --model weights/ocr/best_lprnet_vn.onnx --image path/to/plate_crop.jpg
+python scripts/test_ocr_onnx_opencv.py --model weights/ocr/best_lprnet_vn.onnx --image samples/car_sample_01.jpg
 ```
 
-#### C. Phát hiện biển số trên webcam máy tính (chưa gồm OCR)
+#### C. Real-Time Camera Detection
 ```bash
-python scripts/predict_camera.py --weights weights/best_license_plate_yolo11n.pt
+python scripts/predict_camera.py --weights weights/best_license_plate_yolo11n.pt --camera 0
+```
+
+#### D. End-to-End Pipeline on Raspberry Pi 5 (CPU Only)
+```bash
+python3 scripts/pi_recognize_image.py \
+    --detector weights/deployment/pi_cpu/yolo11n_640_fp32.onnx \
+    --ocr weights/ocr/best_lprnet_vn.onnx \
+    --image samples/car_sample_02.jpg
 ```
 
 ---
 
-## 📚 Danh Mục Báo Cáo Kỹ Thuật & Thực Nghiệm (Technical Reports)
+## 📚 Technical Appendix & Detailed Experiment Reports
 
-Bảng tổng hợp các tài liệu kỹ thuật, số liệu thực nghiệm chuyên sâu và báo cáo đo lường chi tiết của dự án phục vụ công tác đánh giá và thẩm định:
+A collection of scientific evaluations, empirical measurements, and methodology analyses conducted throughout the project:
 
-| Chuyên đề thực nghiệm / Kỹ thuật | Tài liệu báo cáo chi tiết tương ứng |
+| Topic / Experiment Track | Detailed Report Document |
 | :--- | :--- |
-| **Dữ liệu & Hình ảnh kiểm thử hiện trường** | Thư mục `reports/vehicle_smoke/` (Tập hợp ảnh kiểm thử thực tế xe máy, ô tô, xe tải). |
-| **Số liệu Benchmark phần cứng Raspberry Pi 5** | [Báo cáo benchmark Raspberry Pi 5](./reports/PI5_FP32_ONNX_INDIVIDUAL_BENCHMARK.md) (Chi tiết FPS, độ trễ từng stage, RAM). |
-| **Chiến lược định tuyến Hybrid R1 (Cứu nguy xe máy)** | [Báo cáo định tuyến Hybrid R1](./reports/FINAL_LOCKED_HYBRID_R1_ROUTING_REPORT.md). |
-| **Quá trình huấn luyện OCR & Thử nghiệm Phase 4** | [Báo cáo huấn luyện và tối ưu OCR](./reports/PHASE4_MASTER_REPORT_FOR_CHATGPT.md). |
-| **Kỹ thuật chưng cất tri thức (Knowledge Distillation)** | [Báo cáo Teacher & Chưng cất tri thức](./reports/TEACHER_KD_MASTER_REPORT_FOR_CHATGPT.md). |
-| **Phân tích so sánh độ phân giải 416 vs 640** | [Báo cáo thực nghiệm 416 vs 640](./reports/PLATE_416_VS_640_CONTROLLED_REPORT.md). |
+| **Field Verification Images & Scenes** | Directory [`reports/vehicle_smoke/`](./reports/vehicle_smoke/) (Field testing on cars, motorcycles, and trucks). |
+| **Raspberry Pi 5 Hardware Benchmark** | [Raspberry Pi 5 Hardware Benchmark](./reports/PI5_FP32_ONNX_INDIVIDUAL_BENCHMARK.md) (FPS, per-stage latency, RAM, thermal metrics). |
+| **Hybrid R1 Routing & Motorcycle Recovery** | [Hybrid R1 Routing Report](./reports/FINAL_LOCKED_HYBRID_R1_ROUTING_REPORT.md) (Direct vs. cascade vehicle fallback). |
+| **OCR Training & Multi-Seed Validation (Phase 4)**| [Phase 4 OCR Master Report](./reports/PHASE4_MASTER_REPORT_FOR_CHATGPT.md) (Convergence curves, McNemar test, and layout metrics). |
+| **Teacher Model & Knowledge Distillation (KD)** | [Knowledge Distillation Report](./reports/TEACHER_KD_MASTER_REPORT_FOR_CHATGPT.md) (PARSeq-Tiny ViT to LPRNet-Lite distillation). |
+| **Resolution Ablation: 416×416 vs. 640×640** | [Input Resolution Trade-off Report](./reports/PLATE_416_VS_640_CONTROLLED_REPORT.md) (Latency vs. mAP trade-off analysis). |
 
 ---
 
-## 👥 Thành Viên Nhóm & Đóng Góp
+## 👥 Project Team & Repository
 
-* **Nhóm phát triển**: Nhóm 7.
-* **Mã nguồn GitHub**: [https://github.com/KoPinKhanh/Vietnamese-plate-recognition](https://github.com/KoPinKhanh/Vietnamese-plate-recognition)
+* **Development Group**: Group 7
+* **GitHub Repository**: [https://github.com/KoPinKhanh/Vietnamese-plate-recognition](https://github.com/KoPinKhanh/Vietnamese-plate-recognition)
